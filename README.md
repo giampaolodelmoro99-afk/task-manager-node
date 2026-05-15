@@ -13,6 +13,6 @@ Un'applicazione backend costruita con Node.js per la gestione di attività e ute
 
 - **Node.js**: Ambiente di runtime JavaScript.
 - **Express.js**: Framework web per le API.
-- **MongoDB**: Database NoSQL (con Mongoose ODM).
+- **MariaDB**: Database SQL.
 - **JWT**: Per l'autenticazione sicura.
 - **Bcrypt**: Per l'hashing delle password.

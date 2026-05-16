@@ -32,7 +32,7 @@ async function initDb(){
                 user_id INT UNSIGNED NOT NULL,
                 title_task VARCHAR(50) NOT NULL,
                 date DATE NOT NULL,
-                time TIME , 
+                time TIME NOT NULL, 
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )
         `);

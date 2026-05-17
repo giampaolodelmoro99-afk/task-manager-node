@@ -1,5 +1,4 @@
 const mariadb = require('mariadb');
-
 const dotenv = require('dotenv').config();
 
 const pool = mariadb.createPool({
@@ -11,49 +10,44 @@ const pool = mariadb.createPool({
     connectionLimit: 50
 });
 
-async function initDb(){
-
+async function initDb() {
 
     try{
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS users(
+            id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(40) NOT NULL,
+            surname VARCHAR(40) NOT NULL,
+            email VARCHAR(90) UNIQUE NOT NULL,
+            password VARCHAR(250)
+            )
+            `);
+
+    
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tasks(
+            id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            user_id INT UNSIGNED NOT NULL,
+            title_task VARCHAR(40) NOT NULL,
+            date DATE NOT NULL,
+            time TIME NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+            `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                name VARCHAR(50) NOT NULL,
-                surname VARCHAR(50) NOT NULL,
-                email VARCHAR(50) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL
+            CREATE TABLE IF NOT EXISTS notes(
+            id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            task_id INT UNSIGNED NOT NULL,
+            title_note VARCHAR(40) NOT NULL,
+            is_completed BOOLEAN DEFAULT FALSE,
+            FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
             )
-        `);
-
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS tasks (
-                id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                user_id INT UNSIGNED NOT NULL,
-                title_task VARCHAR(50) NOT NULL,
-                date DATE NOT NULL,
-                time TIME NOT NULL, 
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            )
-        `);
-
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS notes (
-                id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                task_id INT UNSIGNED NOT NULL,
-                title_note VARCHAR(50) NOT NULL,
-                is_completed BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
-            )
-        `);
-
-        console.log('database inizializzato con successo');
-
+            `);
     }catch(err){
-        console.error('errore inizializzazione database: ', err);
+        console.error('Errore database: ', err);
     }
+
 }
-
-
 
 module.exports = {pool, initDb};
